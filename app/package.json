@@ -1,0 +1,7 @@
+{
+  "name": "compra-inteligente-app",
+  "private": true,
+  "scripts": {
+    "start": "ionic serve"
+  }
+}

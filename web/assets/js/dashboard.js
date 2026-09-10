@@ -1,0 +1,1 @@
+// Comportamentos específicos do dashboard.
