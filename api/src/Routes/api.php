@@ -22,7 +22,7 @@ return static function (App $app): void {
     $app->post('/usuarios', [UsuarioController::class, 'store']);
     $app->post('/login', [UsuarioController::class, 'login']);
 
-    $app->group('', function (App $app) {
+    $app->group('', function ($app) {
         $app->post('/listas', [ListaController::class, 'store']);
         $app->post('/listas/{id}/itens', [ListaController::class, 'addItem']);
         (require dirname(__DIR__) . '/Routes/lista.php')($app);

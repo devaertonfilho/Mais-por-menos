@@ -50,8 +50,8 @@ final class SincronizarPrecosSefaz
 
                 try {
                     // 2. Consulta preço na API SEFAZ/AL
-                    // Assume-se que o endpoint 'precos' aceita { "codigo_barras": "..." }
-                    $resultado = $this->sefaz->consultar('precos', ['codigo_barras' => $barcode]);
+                    // Conforme Manual: endpoint 'produto/pesquisa' e parâmetro 'gtin'
+                    $resultado = $this->sefaz->consultar('produto/pesquisa', ['gtin' => $barcode]);
 
                     // 3. Extrai o preço (depende da estrutura exata da resposta da API)
                     // Assume-se que a API retorna um array de preços ou um objeto com 'preco'
