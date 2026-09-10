@@ -20,3 +20,4 @@ yarn-error.log*
 # Environment variables
 .env
 .env.local
+node_modules/\n.angular/
