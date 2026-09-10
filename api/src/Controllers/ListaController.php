@@ -19,20 +19,13 @@ final class ListaController extends ApiController
     {
         $body = $this->body($request);
         $nome = $this->requiredString($body, 'nome');
-        $usuarioId = filter_var($body['usuario_id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $usuarioId = $request->getAttribute('usuario_id');
 
-        if ($nome === null || $usuarioId === false) {
-            return $this->error($response, 'Nome e usuario_id válido são obrigatórios.');
+        if ($nome === null || $usuarioId === null) {
+            return $this->error($response, 'Nome é obrigatório e usuário não autenticado.');
         }
 
         try {
-            $userStatement = $this->pdo->prepare('SELECT id FROM usuarios WHERE id = :id');
-            $userStatement->execute(['id' => $usuarioId]);
-
-            if ($userStatement->fetch() === false) {
-                return $this->error($response, 'Usuário não encontrado.', 404);
-            }
-
             $statement = $this->pdo->prepare('INSERT INTO listas (usuario_id, nome) VALUES (:usuario_id, :nome)');
             $statement->execute(['usuario_id' => $usuarioId, 'nome' => $nome]);
 
