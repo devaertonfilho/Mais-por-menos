@@ -54,3 +54,55 @@ final class UsuarioController extends ApiController
         }
     }
 }
+
+    public function login(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $body = $this->body($request);
+        $email = $this->requiredString($body, 'email');
+        $senha = $this->requiredString($body, 'senha');
+
+        if ($email === null || $senha === null) {
+            return $this->error($response, 'Email e senha são obrigatórios.', 400);
+        }
+
+        try {
+            $stmt = $this->pdo->prepare('SELECT id, email, senha_hash FROM usuarios WHERE email = :email');
+            $stmt->execute(['email' => $email]);
+            $user = $stmt->fetch();
+
+            if (!$user || !password_verify($senha, $user['senha_hash'])) {
+                return $this->error($response, 'Email ou senha incorretos.', 401);
+            }
+
+            $secret = $_ENV['JWT_SECRET'] ?? '';
+            if ($secret === '') {
+                return $this->error($response, 'Erro interno: JWT_SECRET não configurado.', 500);
+            }
+
+            $payload = [
+                'iss' => 'mais-por-menos-api',
+                'sub' => (string) $user['id'],
+                'id'  => (int) $user['id'],
+                'email' => $user['email'],
+                'iat' => time(),
+                'exp' => time() + (60 * 60 * 24), // 24 horas
+            ];
+
+            $jwt = \Firebase\JWT\JWT::encode($payload, $secret, 'HS256');
+
+            return $this->json($response, [
+                'status' => 'sucesso',
+                'mensagem' => 'Login realizado com sucesso.',
+                'dados' => [
+                    'token' => $jwt,
+                    'usuario' => [
+                        'id' => (int) $user['id'],
+                        'email' => $user['email'],
+                    ]
+                ],
+            ]);
+        } catch (\Exception $exception) {
+            return $this->error($response, 'Erro ao processar login: ' . $exception->getMessage(), 500);
+        }
+    }
+}
