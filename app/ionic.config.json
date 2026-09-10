@@ -1,4 +1,5 @@
 {
-  "name": "compra-inteligente",
-  "type": "angular"
+  "name": "mais-por-menos-app",
+  "type": "angular",
+  "integrations": {}
 }

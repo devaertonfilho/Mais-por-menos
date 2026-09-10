@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar><ion-title>Nova lista</ion-title></ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="listaForm" (ngSubmit)="criarLista()">
+    <ion-item>
+      <ion-input label="ID do usuário" labelPlacement="stacked" type="number" formControlName="usuarioId"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input label="Nome da lista" labelPlacement="stacked" formControlName="nome"></ion-input>
+    </ion-item>
+    <ion-button type="submit" [disabled]="carregando">Criar lista</ion-button>
+  </form>
+
+  @if (lista) {
+    <h2>{{ lista.nome }}</h2>
+    <ion-item>
+      <ion-input label="Código de barras" labelPlacement="stacked" [formControl]="codigoBarrasControl" (keyup.enter)="lerCodigoBarras()"></ion-input>
+    </ion-item>
+    <ion-button (click)="lerCodigoBarras()" [disabled]="carregando">Buscar e adicionar produto</ion-button>
+  }
+
+  @if (carregando) { <ion-spinner></ion-spinner> }
+  @if (mensagem) { <ion-note>{{ mensagem }}</ion-note> }
+
+  <ion-list>
+    @for (produto of itens; track produto.id) {
+      <ion-item>
+        <ion-label>
+          <h3>{{ produto.nome }}</h3>
+          <p>{{ produto.marca || 'Sem marca' }} · {{ produto.codigo_barras }}</p>
+        </ion-label>
+      </ion-item>
+    }
+  </ion-list>
+</ion-content>

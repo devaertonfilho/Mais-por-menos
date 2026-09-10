@@ -1,0 +1,114 @@
+{
+  "info": {
+    "_postman_id": "c4b6567c-9419-46a7-a129-b9e50194cec7",
+    "name": "Mais por Menos API",
+    "description": "Coleção de exemplos para a API Slim do Mais por Menos.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "usuarioId",
+      "value": "1"
+    },
+    {
+      "key": "listaId",
+      "value": "1"
+    },
+    {
+      "key": "produtoId",
+      "value": "1"
+    },
+    {
+      "key": "codigoBarras",
+      "value": "7891000100103"
+    }
+  ],
+  "item": [
+    {
+      "name": "Ping",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/ping"
+      }
+    },
+    {
+      "name": "Cadastrar usuário",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Ana Silva\",\n  \"email\": \"ana.silva@exemplo.com\",\n  \"senha\": \"senha-segura-123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/usuarios"
+      }
+    },
+    {
+      "name": "Criar lista",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usuario_id\": {{usuarioId}},\n  \"nome\": \"Compras da semana\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/listas"
+      }
+    },
+    {
+      "name": "Buscar produto por código de barras",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/produtos/{{codigoBarras}}"
+      }
+    },
+    {
+      "name": "Adicionar item à lista",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"produto_id\": {{produtoId}},\n  \"quantidade\": 2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/listas/{{listaId}}/itens"
+      }
+    }
+  ]
+}
