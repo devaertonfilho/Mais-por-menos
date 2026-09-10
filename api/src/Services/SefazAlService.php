@@ -7,13 +7,21 @@ namespace App\Services;
 use App\Config\SefazAl;
 use RuntimeException;
 
-/** Cliente HTTP da fonte pública Economiza Alagoas/Sefaz-AL. */
+/**
+ * Cliente HTTP para a API do Economiza Alagoas (SEFAZ/AL).
+ * Implementa requisições POST conforme exigido pelo Manual do Desenvolvedor.
+ */
 final class SefazAlService
 {
     /**
-     * @return array<string, mixed>
+     * Realiza uma requisição POST para a API da SEFAZ/AL.
+     *
+     * @param string $recurso Caminho do endpoint (ex: 'precos', 'estabelecimentos').
+     * @param array<string, mixed> $body Dados a serem enviados no corpo da requisição.
+     * @return array<string, mixed> Resposta decodificada da API.
+     * @throws RuntimeException Em caso de erro na requisição ou resposta inválida.
      */
-    public function consultar(string $recurso, array $query = []): array
+    public function consultar(string $recurso, array $body = []): array
     {
         $baseUrl = SefazAl::baseUrl();
         if ($baseUrl === '') {
@@ -21,33 +29,48 @@ final class SefazAlService
         }
 
         $url = $baseUrl . '/' . ltrim($recurso, '/');
-        if ($query !== []) {
-            $url .= '?' . http_build_query($query);
-        }
-
-        $headers = ['Accept: application/json'];
         $token = SefazAl::token();
-        if ($token !== '') {
-            $headers[] = 'Authorization: Bearer ' . $token;
+
+        if ($token === '') {
+            throw new RuntimeException('O token SEFAZ_TOKEN não foi configurado no ambiente.');
         }
 
-        $request = curl_init($url);
-        curl_setopt_array($request, [
+        $payload = json_encode($body);
+        $headers = [
+            'Content-Type: application/json',
+            'Accept: application/json',
+            'AppToken: ' . $token,
+        ];
+
+        $curl = curl_init($url);
+        curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_TIMEOUT        => 30,
         ]);
-        $body = curl_exec($request);
-        $status = (int) curl_getinfo($request, CURLINFO_RESPONSE_CODE);
-        curl_close($request);
 
-        if ($body === false || $status < 200 || $status >= 300) {
-            throw new RuntimeException('Não foi possível consultar a API da Sefaz-AL.');
+        $response = curl_exec($curl);
+        $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+        $error = curl_error($curl);
+        curl_close($curl);
+
+        if ($response === false) {
+            throw new RuntimeException("Erro de rede na API SEFAZ/AL: {$error}");
         }
 
-        $dados = json_decode($body, true);
-        if (!is_array($dados)) {
-            throw new RuntimeException('A API da Sefaz-AL retornou uma resposta inválida.');
+        if ($status === 429) {
+            throw new RuntimeException('Limite de requisições (Rate Limit) atingido na API SEFAZ/AL.', 429);
+        }
+
+        if ($status < 200 || $status >= 300) {
+            throw new RuntimeException("A API SEFAZ/AL retornou erro HTTP {$status}: {$response}");
+        }
+
+        $dados = json_decode($response, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Resposta da API SEFAZ/AL não é um JSON válido.');
         }
 
         return $dados;

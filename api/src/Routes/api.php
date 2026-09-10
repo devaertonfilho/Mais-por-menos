@@ -23,4 +23,7 @@ return static function (App $app): void {
     $app->post('/listas', [ListaController::class, 'store']);
     $app->get('/produtos/{codigo_barras}', [ProdutoController::class, 'showByBarcode']);
     $app->post('/listas/{id}/itens', [ListaController::class, 'addItem']);
+
+    (require dirname(__DIR__) . '/Routes/lista.php')($app);
+    (require dirname(__DIR__) . '/Routes/ia.php')($app);
 };

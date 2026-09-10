@@ -1,1 +1,200 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Dashboard</title></head><body><h1>Dashboard</h1></body></html>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Gastos - Mais por Menos</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #chart-container {
+            position: relative;
+            height: 40vh;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">💰 Mais por Menos - Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6">
+                <h2 class="fw-bold">Resumo da Lista</h2>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="input-group w-auto ms-auto">
+                    <span class="input-group-text">ID da Lista</span>
+                    <input type="number" id="listaId" class="form-control" placeholder="Ex: 1" style="width: 100px;">
+                    <button class="btn btn-primary" id="btnConsultar">Consultar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboardContent" style="display: none;">
+            <div class="row text-center mb-5">
+                <div class="col-md-4 mb-3">
+                    <div class="card p-3 text-primary">
+                        <div class="stat-label">Orçamento</div>
+                        <div class="stat-value" id="valOrcamento">R$ 0,00</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card p-3 text-danger">
+                        <div class="stat-label">Total Gasto</div>
+                        <div class="stat-value" id="valGasto">R$ 0,00</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card p-3" id="cardEconomia">
+                        <div class="stat-label">Economia</div>
+                        <div class="stat-value" id="valEconomia">R$ 0,00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card p-4">
+                        <h5 class="text-center mb-4">Comparativo de Gastos</h5>
+                        <div id="chart-container">
+                            <canvas id="resumoChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="emptyState" class="text-center py-5">
+            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076432.png" alt="Search" style="width: 100px; opacity: 0.5;" class="mb-3">
+            <p class="text-muted">Insira o ID de uma lista para visualizar o resumo financeiro.</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        let myChart = null;
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+
+        function updateChart(orcamento, gasto) {
+            const ctx = document.getElementById('resumoChart').getContext('2d');
+
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Orçamento', 'Total Gasto'],
+                    datasets: [{
+                        label: 'Valores (R$)',
+                        data: [orcamento, gasto],
+                        backgroundColor: ['#0d6efd', '#dc3545'],
+                        borderRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return 'R$ ' + value; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $('#btnConsultar').click(function() {
+                const id = $('#listaId').val();
+                if (!id) {
+                    alert('Por favor, insira o ID da lista.');
+                    return;
+                }
+
+                $('#btnConsultar').prop('disabled', true).text('Carregando...');
+
+                $.ajax({
+                    url: `/api/listas/${id}/resumo`,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        const dados = response.dados;
+
+                        // Atualiza Cards
+                        $('#valOrcamento').text(formatCurrency(dados.orcamento));
+                        $('#valGasto').text(formatCurrency(dados.total_gasto));
+                        $('#valEconomia').text(formatCurrency(dados.diferenca));
+
+                        // Estiliza card de economia
+                        if (dados.dentro_do_orcamento) {
+                            $('#cardEconomia').attr('class', 'card p-3 text-success');
+                        } else {
+                            $('#cardEconomia').attr('class', 'card p-3 text-danger');
+                        }
+
+                        // Exibe conteúdo e oculta estado vazio
+                        $('#emptyState').hide();
+                        $('#dashboardContent').fadeIn();
+
+                        // Atualiza Gráfico
+                        updateChart(dados.orcamento, dados.total_gasto);
+                    },
+                    error: function(xhr) {
+                        const msg = xhr.responseJSON?.mensagem || 'Erro ao buscar dados da lista.';
+                        alert('Erro: ' + msg);
+                    },
+                    complete: function() {
+                        $('#btnConsultar').prop('disabled', false).text('Consultar');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

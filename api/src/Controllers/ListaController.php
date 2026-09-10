@@ -104,3 +104,62 @@ final class ListaController extends ApiController
         }
     }
 }
+
+    /** @param array<string, string> $args */
+    public function resumo(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $args
+    ): ResponseInterface {
+        $listaId = filter_var($args['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+        if ($listaId === false) {
+            return $this->error($response, 'ID da lista inválido.', 400);
+        }
+
+        try {
+            // 1. Busca orçamento da lista
+            $stmt = $this->pdo->prepare('SELECT orcamento FROM listas WHERE id = :id');
+            $stmt->execute(['id' => $listaId]);
+            $lista = $stmt->fetch();
+
+            if ($lista === false) {
+                return $this->error($response, 'Lista não encontrada.', 404);
+            }
+
+            $orcamento = (float) ($lista['orcamento'] ?? 0.0);
+
+            // 2. Soma preços dos itens marcados como comprados
+            // Assume-se a tabela precos com o preco mais recente por produto
+            $sql = "
+                SELECT SUM(il.quantidade * p.preco) as total_gasto
+                FROM itens_lista il
+                JOIN (
+                    SELECT produto_id, preco
+                    FROM precos
+                    WHERE id IN (SELECT MAX(id) FROM precos GROUP BY produto_id)
+                ) p ON il.produto_id = p.produto_id
+                WHERE il.lista_id = :lista_id AND il.comprado = 1
+            ";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['lista_id' => $listaId]);
+            $resumo = $stmt->fetch();
+
+            $totalGasto = (float) ($resumo['total_gasto'] ?? 0.0);
+            $diferenca = $orcamento - $totalGasto;
+
+            return $this->json($response, [
+                'status' => 'sucesso',
+                'dados' => [
+                    'orcamento' => $orcamento,
+                    'total_gasto' => $totalGasto,
+                    'diferenca' => $diferenca,
+                    'dentro_do_orcamento' => $totalGasto <= $orcamento
+                ]
+            ]);
+        } catch (PDOException) {
+            return $this->error($response, 'Erro ao calcular resumo da lista.', 500);
+        }
+    }
+}
