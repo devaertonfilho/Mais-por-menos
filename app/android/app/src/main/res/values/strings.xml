@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mais-por-menos</string>
+    <string name="title_activity_main">Mais-por-menos</string>
+    <string name="package_name">com.maispormenos.app</string>
+    <string name="custom_url_scheme">com.maispormenos.app</string>
+</resources>
