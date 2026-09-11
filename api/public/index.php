@@ -28,6 +28,7 @@ $errorMiddleware->setDefaultErrorHandler(new JsonErrorHandler($app->getResponseF
 try {
     $app->run();
 } catch (\Throwable $e) {
+    error_log("[" . date('Y-m-d H:i:s') . "] FATAL ERROR: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n", 3, __DIR__ . '/../logs/error.log');
     echo "FATAL ERROR: " . $e->getMessage() . "\n";
     echo "File: " . $e->getFile() . " Line: " . $e->getLine() . "\n";
     echo "Stack Trace:\n" . $e->getTraceAsString() . "\n";

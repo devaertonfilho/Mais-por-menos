@@ -9,7 +9,7 @@ import { ApiResponse } from './api.service';
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
-  private readonly baseUrl = 'http://192.168.1.103:8080'; // Should be configurable
+  private readonly baseUrl = 'http://localhost:8000'; // Should be configurable
 
   constructor(private readonly http: HttpClient) {}
 
