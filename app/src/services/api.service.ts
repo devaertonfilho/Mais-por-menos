@@ -1,6 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError, throwError as throwErrorRx } from 'rxjs';
+import { catchError as catchErrorRx } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 export interface ApiResponse<T> {
   status: 'sucesso' | 'erro';
@@ -25,17 +28,27 @@ export interface Lista {
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
+  // Altere para o IP da sua máquina se for testar no celular real
   private readonly baseUrl = 'http://localhost:8080';
 
   constructor(private readonly http: HttpClient) {}
 
-  criarLista(usuarioId: number, nome: string): Observable<ApiResponse<Lista>> {
-    return this.http.post<ApiResponse<Lista>>(`${this.baseUrl}/listas`, {
-      usuario_id: usuarioId,
-      nome
-    });
+  // --- AUTENTICAÇÃO ---
+  login(email: string, senha: string): Observable<ApiResponse<{ token: string, usuario: any }>> {
+    return this.http.post<ApiResponse<{ token: string, usuario: any }>>(`${this.baseUrl}/login`, { email, senha });
   }
 
+  // --- LISTAS ---
+  criarLista(nome: string): Observable<ApiResponse<Lista>> {
+    // usuario_id agora é injetado pelo token via AuthInterceptor
+    return this.http.post<ApiResponse<Lista>>(`${this.baseUrl}/listas`, { nome });
+  }
+
+  listarMinhasListas(): Observable<ApiResponse<Lista[]>> {
+    return this.http.get<ApiResponse<Lista[]>>(`${this.baseUrl}/listas`);
+  }
+
+  // --- PRODUTOS ---
   buscarProduto(codigoBarras: string): Observable<ApiResponse<Produto>> {
     return this.http.get<ApiResponse<Produto>>(`${this.baseUrl}/produtos/${encodeURIComponent(codigoBarras)}`);
   }
@@ -44,6 +57,13 @@ export class ApiService {
     return this.http.post<ApiResponse<{ id: number }>>(`${this.baseUrl}/listas/${listaId}/itens`, {
       produto_id: produtoId,
       quantidade
+    });
+  }
+
+  // --- IA ---
+  obterSugestao(listaId: number): Observable<ApiResponse<{ sugestao: string }>> {
+    return this.http.post<ApiResponse<{ sugestao: string }>>(`${this.baseUrl}/ia/sugestao-lista`, {
+      lista_id: listaId
     });
   }
 }
