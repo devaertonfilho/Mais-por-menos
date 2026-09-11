@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -30,42 +30,59 @@ export class HomePage implements OnInit {
   constructor(
     private readonly api: ApiService,
     private readonly auth: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly zone: NgZone
   ) {}
 
   async ngOnInit() {
+    console.log('HomePage: ngOnInit iniciado');
     await this.carregarListas();
   }
 
   async carregarListas() {
-    this.carregando = true;
-    try {
-      const user = await this.auth.getUser();
-      if (!user) {
-        this.mensagem = 'Usuário não autenticado.';
-        this.router.navigate(['/login']);
-        return;
-      }
+    console.log('HomePage: carregarListas iniciado');
 
-      this.api.listarMinhasListas().pipe(
-        finalize(() => this.carregando = false)
-      ).subscribe({
-        next: (response) => {
-          if (response.status === 'sucesso' && response.dados) {
-            this.listas = response.dados;
-          } else {
-            this.mensagem = response.mensagem ?? 'Erro ao carregar listas.';
-          }
-        },
-        error: (err) => {
-          console.error('Erro ao buscar listas:', err);
-          this.mensagem = 'Erro de conexão com o servidor.';
+    this.zone.runAsync(async () => {
+      this.carregando = true;
+      try {
+        const user = await this.auth.getUser();
+        console.log('HomePage: usuário obtido:', user);
+
+        if (!user) {
+          console.log('HomePage: usuário não encontrado, navegando para login');
+          this.mensagem = 'Usuário não autenticado.';
+          this.router.navigate(['/login']);
+          return;
         }
-      });
-    } catch (error) {
-      console.error('Erro ao obter usuário:', error);
-      this.carregando = false;
-    }
+
+        this.api.listarMinhasListas().pipe(
+          finalize(() => {
+            this.zone.run(() => this.carregando = false);
+          })
+        ).subscribe({
+          next: (response) => {
+            this.zone.run(() => {
+              if (response.status === 'sucesso' && response.dados) {
+                this.listas = response.dados;
+              } else {
+                this.mensagem = response.mensagem ?? 'Erro ao carregar listas.';
+              }
+            });
+          },
+          error: (err) => {
+            this.zone.run(() => {
+              console.error('Erro ao buscar listas:', err);
+              this.mensagem = 'Erro de conexão com o servidor.';
+            });
+          }
+        });
+      } catch (error) {
+        this.zone.run(() => {
+          console.error('Erro ao obter usuário:', error);
+          this.carregando = false;
+        });
+      }
+    });
   }
 
   irParaNovaLista() {

@@ -1,21 +1,38 @@
 import { Routes } from '@angular/router';
-import { OnboardingPage } from './pages/onboarding/onboarding.page';
-import { HomePage } from './pages/home/home.page'; // This looks wrong, let me check the path
-import { NovaListaPage } from './pages/nova-lista/nova-lista.page';
-import { ListaPage } from './pages/lista/lista.page';
-import { ListaDetalhePage } from './pages/lista-detalhe/lista-detalhe.page';
-import { CadastroPage } from './pages/cadastro/cadastro.page';
-import { LoginPage } from './pages/login/login.page';
 
 export const routes: Routes = [
-  { path: 'onboarding', component: OnboardingPage },
-  { path: 'cadastro', component: CadastroPage },
-  { path: 'home', component: HomePage },
-  { path: 'login', component: LoginPage },
-  { path: 'lista', component: ListaPage },
-  { path: 'lista-detalhe/:id', component: ListaDetalhePage },
-  { path: 'nova-lista', component: NovaListaPage },
-  { path: 'scanner', loadComponent: () => import('./pages/scanner/scanner.page').then(m => m.ScannerPage) },
+  {
+    path: 'onboarding',
+    loadComponent: () => import('./pages/onboarding/onboarding.page').then(m => m.OnboardingPage)
+  },
+  {
+    path: 'cadastro',
+    loadComponent: () => import('./pages/cadastro/cadastro.page').then(m => m.CadastroPage)
+  },
+  {
+    path: 'home',
+    loadComponent: () => import('./pages/home/home.page').then(m => m.HomePage)
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
+  },
+  {
+    path: 'lista',
+    loadComponent: () => import('./pages/lista/lista.page').then(m => m.ListaPage)
+  },
+  {
+    path: 'lista-detalhe/:id',
+    loadComponent: () => import('./pages/lista-detalhe/lista-detalhe.page').then(m => m.ListaDetalhePage)
+  },
+  {
+    path: 'nova-lista',
+    loadComponent: () => import('./pages/nova-lista/nova-lista.page').then(m => m.NovaListaPage)
+  },
+  {
+    path: 'scanner',
+    loadComponent: () => import('./pages/scanner/scanner.page').then(m => m.ScannerPage)
+  },
   { path: '', pathMatch: 'full', redirectTo: 'onboarding' },
   { path: '**', redirectTo: 'onboarding' }
 ];

@@ -55,7 +55,7 @@ export class CadastroPage {
     ).subscribe({
       next: (response) => {
         this.mensagem = response.mensagem ?? 'Cadastro realizado com sucesso!';
-        setTimeout(() => this.router.navigate(['/home']), 1500);
+        this.router.navigate(['/home']);
       },
       error: (error) => {
         console.error('Erro no cadastro:', error);
