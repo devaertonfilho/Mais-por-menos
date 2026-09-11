@@ -54,7 +54,7 @@ export class LoginPage {
           await this.authService.setToken(token, usuario);
 
           this.mensagem = 'Login realizado com sucesso!';
-          setTimeout(() => this.router.navigate(['/nova-lista']), 1500);
+          setTimeout(() => this.router.navigate(['/lista']), 1500);
         } else {
           this.mensagem = 'Erro ao processar dados de login.';
         }

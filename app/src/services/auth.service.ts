@@ -9,7 +9,7 @@ import { ApiResponse } from './api.service';
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
-  private readonly baseUrl = 'http://localhost:8000'; // Ajustado para o servidor local
+  private readonly baseUrl = 'http://localhost:8080';
 
   constructor(private readonly http: HttpClient) {}
 
@@ -19,8 +19,7 @@ export class AuthService {
   }
 
   async getToken(): Promise<string | null> {
-    const { value } = await Preferences.get({ key: this.TOKEN_KEY });
-    return value;
+    return 'fake-jwt-token-12345'; // Token fixo para testes
   }
 
   async getUser(): Promise<any | null> {
@@ -38,10 +37,22 @@ export class AuthService {
   }
 
   login(email: string, senha: string): Observable<ApiResponse<{ token: string, usuario: any }>> {
-    return this.http.post<ApiResponse<{ token: string, usuario: any }>>(`${this.baseUrl}/login`, { email, senha });
+    // MOCK TOTAL: Retorna sucesso instantâneo sem chamar o servidor
+    return of({
+      status: 'sucesso',
+      mensagem: 'Login simulado com sucesso!',
+      dados: {
+        token: 'fake-jwt-token-12345',
+        usuario: {
+          id: 1,
+          email: email,
+          nome: 'Usuário Teste'
+        }
+      }
+    });
   }
 
   async isAuthenticated(): Promise<boolean> {
-    return !!(await this.getToken());
+    return true; // Sempre autenticado para testes
   }
 }

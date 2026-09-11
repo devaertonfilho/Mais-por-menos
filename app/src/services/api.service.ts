@@ -1,6 +1,6 @@
 import { HttpClient, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError, throwError as throwErrorRx } from 'rxjs';
 import { catchError as catchErrorRx } from 'rxjs/operators';
 import { tap } from 'rxjs/operators';
@@ -28,7 +28,7 @@ export interface Lista {
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:8000'; // Ajustado para o servidor local
+  private readonly baseUrl = 'http://localhost:8080';
 
   constructor(private readonly http: HttpClient) {}
 
@@ -39,12 +39,25 @@ export class ApiService {
 
   // --- LISTAS ---
   criarLista(nome: string): Observable<ApiResponse<Lista>> {
-    // usuario_id agora é injetado pelo token via AuthInterceptor
-    return this.http.post<ApiResponse<Lista>>(`${this.baseUrl}/listas`, { nome });
+    // MOCK TOTAL: Cria a lista instantaneamente sem servidor
+    return of({
+      status: 'sucesso',
+      mensagem: 'Lista criada com sucesso (Simulado)!',
+      dados: { id: Math.floor(Math.random() * 1000), usuario_id: 1, nome: nome }
+    });
   }
 
   listarMinhasListas(): Observable<ApiResponse<Lista[]>> {
-    return this.http.get<ApiResponse<Lista[]>>(`${this.baseUrl}/listas`);
+    // MOCK TOTAL: Retorna listas fictícias para teste imediato
+    return of({
+      status: 'sucesso',
+      mensagem: 'Listas carregadas (Simulado)',
+      dados: [
+        { id: 1, usuario_id: 1, nome: 'Compras do Mês' },
+        { id: 2, usuario_id: 1, nome: 'Feira de Sábado' },
+        { id: 3, usuario_id: 1, nome: 'Farmácia' }
+      ]
+    });
   }
 
   buscarListas(usuarioId: number): Observable<ApiResponse<Lista[]>> {
@@ -53,13 +66,27 @@ export class ApiService {
 
   // --- PRODUTOS ---
   buscarProduto(codigoBarras: string): Observable<ApiResponse<Produto>> {
-    return this.http.get<ApiResponse<Produto>>(`${this.baseUrl}/produtos/${encodeURIComponent(codigoBarras)}`);
+    // MOCK TOTAL: Retorna um produto genérico para qualquer código
+    return of({
+      status: 'sucesso',
+      mensagem: 'Produto encontrado (Simulado)!',
+      dados: {
+        id: Math.floor(Math.random() * 1000),
+        codigo_barras: codigoBarras,
+        nome: 'Produto de Teste ' + codigoBarras,
+        marca: 'Marca Genérica',
+        categoria: 'Diversos',
+        peso: '1kg'
+      }
+    });
   }
 
   adicionarItem(listaId: number, produtoId: number, quantidade = 1): Observable<ApiResponse<{ id: number }>> {
-    return this.http.post<ApiResponse<{ id: number }>>(`${this.baseUrl}/listas/${listaId}/itens`, {
-      produto_id: produtoId,
-      quantidade
+    // MOCK TOTAL: Adiciona o item instantaneamente sem servidor
+    return of({
+      status: 'sucesso',
+      mensagem: 'Produto adicionado com sucesso (Simulado)!',
+      dados: { id: produtoId }
     });
   }
 

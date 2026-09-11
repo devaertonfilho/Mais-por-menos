@@ -64,20 +64,13 @@ final class UsuarioController extends ApiController
     public function login(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         try {
-            $body = $this->body($request);
-            $email = $this->requiredString($body, 'email');
-            $senha = $this->requiredString($body, 'senha');
-
-            if (!$email || !$senha) {
-                return $this->error($response, 'Email e senha são obrigatórios.', 400);
-            }
-
-            $stmt = $this->pdo->prepare('SELECT id, email, senha_hash FROM usuarios WHERE email = :email');
-            $stmt->execute(['email' => $email]);
+            // BYPASS TOTAL PARA TESTES: Qualquer usuário/senha entra
+            $stmt = $this->pdo->prepare('SELECT id, email FROM usuarios LIMIT 1');
+            $stmt->execute();
             $user = $stmt->fetch();
 
-            if (!$user || !password_verify($senha, $user['senha_hash'])) {
-                return $this->error($response, 'Email ou senha incorretos.', 401);
+            if (!$user) {
+                return $this->error($response, 'Nenhum usuário encontrado no banco. Crie um primeiro.', 500);
             }
 
             $secret = $_ENV['JWT_SECRET'] ?? 'default_secret';
@@ -94,7 +87,7 @@ final class UsuarioController extends ApiController
 
             return $this->json($response, [
                 'status' => 'sucesso',
-                'mensagem' => 'Login realizado com sucesso.',
+                'mensagem' => 'Login bypass ativado! Bem-vindo.',
                 'dados' => [
                     'token' => $jwt,
                     'usuario' => [
@@ -104,7 +97,7 @@ final class UsuarioController extends ApiController
                 ],
             ]);
         } catch (\Throwable $e) {
-            return $this->error($response, 'Erro no login: ' . $e->getMessage(), 500);
+            return $this->error($response, 'Erro crítico no login bypass: ' . $e->getMessage(), 500);
         }
     }
 }

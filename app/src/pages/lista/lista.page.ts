@@ -32,15 +32,23 @@ export class ListaPage implements OnInit {
 
   ngOnInit(): void {
     console.log('DEBUG: ListaPage ngOnInit chamado!');
-    // Comentamos a chamada ao servidor para testar se a tela abre
-    // this.carregarListas();
+    this.carregarListas();
   }
 
   carregarListas(): void {
     console.log('DEBUG: carregarListas() iniciado...');
     this.carregando = true;
     this.mensagem = '';
-    // Usando usuarioId = 1 como padrão, assim como em NovaListaPage
+
+    // Fail-safe: Força o fim do carregamento após 10 segundos, não importa o que aconteça
+    const failSafeTimer = setTimeout(() => {
+      if (this.carregando) {
+        console.warn('DEBUG: Fail-safe ativado! O servidor demorou demais.');
+        this.carregando = false;
+        this.mensagem = 'O servidor não respondeu a tempo. Verifique sua conexão.';
+      }
+    }, 10000);
+
     this.api.buscarListas(1).pipe(
       timeout(5000),
       catchError(err => {
@@ -50,6 +58,7 @@ export class ListaPage implements OnInit {
       finalize(() => {
         console.log('DEBUG: carregarListas() finalizado.');
         this.carregando = false;
+        clearTimeout(failSafeTimer);
       })
     ).subscribe({
       next: (response) => {
