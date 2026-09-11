@@ -28,7 +28,7 @@ export interface Lista {
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly baseUrl = 'http://192.168.1.112:8080';
+  private readonly baseUrl = 'http://localhost:8080';
 
   constructor(private readonly http: HttpClient) {}
 

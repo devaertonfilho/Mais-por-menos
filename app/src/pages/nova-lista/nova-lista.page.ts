@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { concatMap, finalize, map } from 'rxjs';
 import { ApiResponse, ApiService, Lista, Produto } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-nova-lista',
@@ -27,6 +28,13 @@ export class NovaListaPage implements OnInit {
   });
   readonly codigoBarrasControl = this.formBuilder.nonNullable.control('', Validators.required);
 
+  sugestoes = [
+    { label: 'Compras do Mês', icon: 'cart-outline' },
+    { label: 'Feira', icon: 'leaf-outline' },
+    { label: 'Farmácia', icon: 'medkit-outline' },
+    { label: 'Limpeza', icon: 'water-outline' },
+  ];
+
   lista?: Lista;
   itens: Produto[] = [];
   carregando = false;
@@ -35,17 +43,30 @@ export class NovaListaPage implements OnInit {
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly api: ApiService,
+    private readonly authService: AuthService,
     private readonly navCtrl: NavController,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const authenticated = await this.authService.isAuthenticated();
+    if (!authenticated) {
+      this.mensagem = 'Por favor, faça login para criar uma lista.';
+      setTimeout(() => this.router.navigate(['/login']), 2000);
+      return;
+    }
+
     this.route.queryParams.subscribe(params => {
       if (params['produtoId']) {
         this.adicionarProdutoEscaneado(params['produtoId'], params['nome']);
       }
     });
+  }
+
+  selecionarSugestao(nome: string): void {
+    this.listaForm.patchValue({ nome });
+    this.listaForm.get('nome')?.markAsTouched();
   }
 
   abrirScanner(): void {

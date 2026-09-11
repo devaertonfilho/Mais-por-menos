@@ -6,4 +6,8 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular';
   imports: [IonApp, IonRouterOutlet],
   template: '<ion-app><ion-router-outlet></ion-router-outlet></ion-app>'
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor() {
+    console.log('AppComponent initialized!');
+  }
+}

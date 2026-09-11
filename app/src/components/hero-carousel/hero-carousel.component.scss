@@ -7,7 +7,7 @@
 
 .carousel-card {
   position: relative;
-  border-radius: 32px;
+  border-radius: var(--acc-radius-lg);
   overflow: hidden;
   min-height: 480px;
   padding: 20px 20px 28px;
@@ -106,7 +106,7 @@
 }
 
 .text-content h2 {
-  font-size: 26px;
+  font-size: var(--acc-h2-font);
   font-weight: 700;
   margin: 0 0 10px;
   letter-spacing: -0.3px;
@@ -114,10 +114,10 @@
 }
 
 .text-content p {
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: var(--acc-base-font);
+  line-height: var(--acc-line-height);
   margin: 0;
-  color: rgba(255, 255, 255, 0.85);
+  color: #FFFFFF;
   font-family: 'Inter', system-ui, sans-serif;
   max-width: 300px;
   margin-left: auto;

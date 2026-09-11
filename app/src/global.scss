@@ -1,3 +1,17 @@
+:root {
+  /* Accessibility Scale - Grandma-Friendly */
+  --acc-base-font: 20px;
+  --acc-h1-font: 36px;
+  --acc-h2-font: 32px;
+  --acc-line-height: 1.6;
+  --acc-primary: #1B4332;
+  --acc-secondary: #2D6A4F;
+  --acc-text: #212529;
+  --acc-btn-height: 64px;
+  --acc-radius: 16px;
+  --acc-radius-lg: 32px;
+}
+
 ion-note {
   display: block;
   padding: 0 16px 12px;

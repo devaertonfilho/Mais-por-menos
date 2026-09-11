@@ -131,7 +131,7 @@ final class ListaController extends ApiController
     ): ResponseInterface {
         $listaId = filter_var($args['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
-        if ($//S lC l $listaId === false) {
+        if ($listaId === false) {
             return $this->error($response, 'ID da lista inválido.', 400);
         }
 
@@ -192,7 +192,7 @@ final class ListaController extends ApiController
         $novoNome = $this->requiredString($body, 'nome');
 
         if ($listaIdOriginal === false || $usuarioId === null) {
-            return $this->error($//S lC l 'ID da lista inválido ou usuário não autenticado.', 400);
+            return $this->error($response, 'ID da lista inválido ou usuário não autenticado.', 400);
         }
 
         try {

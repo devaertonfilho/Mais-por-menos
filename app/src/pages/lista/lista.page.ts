@@ -6,7 +6,8 @@ import {
 } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
 import { ApiResponse, ApiService, Lista } from '../../services/api.service';
-import { finalize } from 'rxjs';
+import { finalize, timeout, catchError } from 'rxjs';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-lista',
@@ -25,26 +26,43 @@ export class ListaPage implements OnInit {
   constructor(
     public readonly api: ApiService,
     public readonly navCtrl: NavController
-  ) {}
+  ) {
+    console.log('DEBUG: ListaPage Constructor chamado!');
+  }
 
   ngOnInit(): void {
-    this.carregarListas();
+    console.log('DEBUG: ListaPage ngOnInit chamado!');
+    // Comentamos a chamada ao servidor para testar se a tela abre
+    // this.carregarListas();
   }
 
   carregarListas(): void {
+    console.log('DEBUG: carregarListas() iniciado...');
     this.carregando = true;
     this.mensagem = '';
     // Usando usuarioId = 1 como padrão, assim como em NovaListaPage
     this.api.buscarListas(1).pipe(
-      finalize(() => this.carregando = false)
+      timeout(5000),
+      catchError(err => {
+        console.error('DEBUG: Erro de rede ou Timeout:', err);
+        return of({ status: 'erro', mensagem: 'Tempo de resposta esgotado ou erro de rede.' } as ApiResponse<Lista[]>);
+      }),
+      finalize(() => {
+        console.log('DEBUG: carregarListas() finalizado.');
+        this.carregando = false;
+      })
     ).subscribe({
       next: (response) => {
+        console.log('DEBUG: Resposta recebida do servidor:', response);
         this.listas = response.dados ?? [];
         if (this.listas.length === 0) {
           this.mensagem = 'Nenhuma lista encontrada.';
         }
       },
-      error: (error) => this.mensagem = 'Não foi possível carregar as listas.'
+      error: (error) => {
+        console.error('DEBUG: Erro crítico ao carregar listas:', error);
+        this.mensagem = 'Erro crítico ao conectar com o servidor.';
+      }
     });
   }
 

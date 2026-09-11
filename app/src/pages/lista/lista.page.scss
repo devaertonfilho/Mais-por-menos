@@ -1,0 +1,34 @@
+.ion-padding {
+  --background: #f8f9fa;
+}
+
+ion-item {
+  --min-height: var(--acc-btn-height);
+  --padding-start: 16px;
+  --border-radius: var(--acc-radius);
+  margin-bottom: 12px;
+  border: 1px solid #eee;
+}
+
+ion-label h2 {
+  font-size: var(--acc-h2-font);
+  font-weight: 700;
+  color: var(--acc-primary);
+}
+
+ion-label p {
+  font-size: var(--acc-base-font);
+  color: var(--acc-text);
+}
+
+ion-button {
+  height: var(--acc-btn-height);
+  --border-radius: var(--acc-radius);
+  font-size: var(--acc-base-font);
+  font-weight: 600;
+}
+
+.ion-text-center p {
+  font-size: var(--acc-base-font);
+  color: var(--acc-text);
+}

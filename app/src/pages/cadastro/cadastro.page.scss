@@ -20,15 +20,15 @@
 }
 
 .logo-box {
-  background: #BFFF00;
+  background: var(--acc-secondary);
   width: 64px;
   height: 64px;
-  border-radius: 16px;
+  border-radius: var(--acc-radius);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 32px;
-  color: black;
+  color: #FFFFFF;
 }
 
 .header-section {
@@ -39,14 +39,14 @@
 .header-title {
   font-weight: 800;
   color: #000;
-  font-size: 1.8rem;
+  font-size: var(--acc-h1-font);
   margin-bottom: 8px;
   line-height: 1.2;
 }
 
 .header-subtitle {
-  color: #888;
-  font-size: 1rem;
+  color: var(--acc-text);
+  font-size: var(--acc-base-font);
   margin-bottom: 0;
 }
 
@@ -65,13 +65,13 @@
 }
 
 .main-btn {
-  --background: #BFFF00;
-  --color: #000;
-  --border-radius: 20px;
+  --background: var(--acc-secondary);
+  --color: #FFF;
+  --border-radius: var(--acc-radius);
   font-weight: 800;
-  height: 56px;
+  height: var(--acc-btn-height);
   margin-top: 24px;
-  font-size: 1rem;
+  font-size: var(--acc-base-font);
   --box-shadow: none;
 }
 
@@ -80,8 +80,8 @@
   align-items: center;
   text-align: center;
   margin: 32px 0;
-  color: #888;
-  font-size: 0.9rem;
+  color: var(--acc-text);
+  font-size: var(--acc-base-font);
 }
 
 .divider::before, .divider::after {
@@ -96,10 +96,11 @@
 .social-btn {
   --background: #000;
   --color: #FFF;
-  --border-radius: 20px;
-  height: 52px;
+  --border-radius: var(--acc-radius);
+  height: var(--acc-btn-height);
   margin-bottom: 12px;
   font-weight: 600;
+  font-size: var(--acc-base-font);
   --box-shadow: none;
 }
 
@@ -111,12 +112,12 @@
 .footer-link {
   text-align: center;
   margin-top: 32px;
-  color: #888;
-  font-size: 0.9rem;
+  color: var(--acc-text);
+  font-size: var(--acc-base-font);
 }
 
 .footer-link a {
-  color: #BFFF00;
+  color: var(--acc-secondary);
   font-weight: 700;
   cursor: pointer;
   text-decoration: none;
