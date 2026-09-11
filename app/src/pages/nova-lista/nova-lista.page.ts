@@ -1,26 +1,28 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel,
-  IonList, IonNote, IonSpinner, IonTitle, IonToolbar
+  IonList, IonNote, IonSpinner, IonTitle, IonToolbar, IonButtons, IonBackButton
 } from '@ionic/angular';
 import { concatMap, finalize, map } from 'rxjs';
 import { ApiResponse, ApiService, Lista, Produto } from '../../services/api.service';
 
 @Component({
   selector: 'app-nova-lista',
+  standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, IonButton, IonContent, IonHeader, IonInput,
-    IonItem, IonLabel, IonList, IonNote, IonSpinner, IonTitle, IonToolbar
+    IonItem, IonLabel, IonList, IonNote, IonSpinner, IonTitle, IonToolbar, IonButtons, IonBackButton
   ],
-  templateUrl: './nova-lista.page.html'
+  templateUrl: './nova-lista.page.html',
+  styleUrls: ['./nova-lista.page.scss']
 })
 export class NovaListaPage {
   readonly listaForm = this.formBuilder.nonNullable.group({
-    usuarioId: [1, [Validators.required, Validators.min(1)]],
-    nome: ['', Validators.required]
+    nome: ['', [Validators.required]]
   });
   readonly codigoBarrasControl = this.formBuilder.nonNullable.control('', Validators.required);
 
@@ -29,25 +31,34 @@ export class NovaListaPage {
   carregando = false;
   mensagem = '';
 
-  constructor(private readonly formBuilder: FormBuilder, private readonly api: ApiService) {}
+  constructor(
+    private readonly formBuilder: FormBuilder,
+    private readonly api: ApiService,
+    private readonly router: Router
+  ) {}
 
   criarLista(): void {
     if (this.listaForm.invalid) {
-      this.mensagem = 'Informe o ID do usuário e o nome da lista.';
+      this.mensagem = 'Por favor, informe o nome da lista.';
       return;
     }
 
-    const { usuarioId, nome } = this.listaForm.getRawValue();
+    const { nome } = this.listaForm.getRawValue();
     this.carregando = true;
     this.mensagem = '';
 
-    this.api.criarLista(usuarioId, nome).pipe(finalize(() => this.carregando = false)).subscribe({
+    this.api.criarLista(nome).pipe(
+      finalize(() => this.carregando = false)
+    ).subscribe({
       next: (response) => {
         this.lista = response.dados;
         this.itens = [];
-        this.mensagem = response.mensagem ?? 'Lista criada.';
+        this.mensagem = response.mensagem ?? 'Lista criada com sucesso!';
+
+        // Navega para a home após 1.5s para o usuário ver a mensagem de sucesso
+        setTimeout(() => this.router.navigate(['/home']), 1500);
       },
-      error: (error: HttpErrorResponse) => this.mensagem = this.errorMessage(error)
+      error: (error: HttpErrorResponse | Error) => this.mensagem = this.errorMessage(error)
     });
   }
 

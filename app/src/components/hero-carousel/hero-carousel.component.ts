@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IonIcon } from '@ionic/angular';
 
 interface Slide {
   id: string;
@@ -15,7 +16,7 @@ interface Slide {
 @Component({
   selector: 'app-hero-carousel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IonIcon],
   templateUrl: './hero-carousel.component.html',
   styleUrls: ['./hero-carousel.component.scss']
 })

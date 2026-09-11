@@ -15,8 +15,7 @@
           [class.full]="i < index"
           [class.active]="i === index"
           [style.animation-duration]="SLIDE_DURATION + 'ms'"
-          [style.animation-play-state]="paused ? 'paused' : 'running'"
-          [key]="i === index ? progressKey : undefined"
+          [style.animation-play-state]="paused ? 'running' : 'paused'"
         ></div>
       </div>
     </div>
