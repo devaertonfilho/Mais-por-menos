@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import {
@@ -15,7 +15,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, IonButton, IonContent, IonInput,
-    IonItem, IonSpinner, IonIcon
+    IonItem, IonSpinner, IonIcon, RouterLink
   ],
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss']
