@@ -9,7 +9,7 @@ import { ApiResponse } from './api.service';
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
-  private readonly baseUrl = 'http://localhost:8080';
+  private readonly baseUrl = 'http://localhost:8000'; // Ajustado para o servidor local
 
   constructor(private readonly http: HttpClient) {}
 

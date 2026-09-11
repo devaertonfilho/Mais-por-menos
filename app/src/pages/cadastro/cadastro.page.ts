@@ -46,14 +46,18 @@ export class CadastroPage {
 
     // Como o backend pede 'nome', simulamos como 'Novo Usuário'.
     this.authService.register('Novo Usuário', email, senha).pipe(
-      finalize(() => this.carregando = false)
+      finalize(() => {
+        this.carregando = false;
+        console.log('Requisição de cadastro finalizada.');
+      })
     ).subscribe({
       next: (response) => {
         this.mensagem = response.mensagem ?? 'Cadastro realizado com sucesso!';
         setTimeout(() => this.router.navigate(['/login']), 1500);
       },
       error: (error) => {
-        this.mensagem = 'Erro ao cadastrar. Verifique se o email já existe.';
+        console.error('Erro no cadastro:', error);
+        this.mensagem = 'Erro ao cadastrar. Verifique sua conexão ou se o e-mail já existe.';
       }
     });
   }
