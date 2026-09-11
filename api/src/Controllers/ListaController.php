@@ -19,12 +19,12 @@ final class ListaController extends ApiController
     public function buscarListas(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $args
+        array $args = []
     ): ResponseInterface {
-        $usuarioId = filter_var($args['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $usuarioId = $request->getAttribute('usuario_id');
 
-        if ($usuarioId === false) {
-            return $this->error($response, 'ID do usuário inválido.', 400);
+        if ($usuarioId === null) {
+            return $this->error($response, 'Usuário não autenticado.', 401);
         }
 
         try {

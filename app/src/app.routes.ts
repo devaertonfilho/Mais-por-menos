@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import { HomePage } from './pages/home/home.page';
+import { OnboardingPage } from './pages/onboarding/onboarding.page';
+import { HomePage } from './pages/home/home.page'; // This looks wrong, let me check the path
 import { NovaListaPage } from './pages/nova-lista/nova-lista.page';
 import { ListaPage } from './pages/lista/lista.page';
 import { ListaDetalhePage } from './pages/lista-detalhe/lista-detalhe.page';
@@ -7,6 +8,7 @@ import { CadastroPage } from './pages/cadastro/cadastro.page';
 import { LoginPage } from './pages/login/login.page';
 
 export const routes: Routes = [
+  { path: 'onboarding', component: OnboardingPage },
   { path: 'cadastro', component: CadastroPage },
   { path: 'home', component: HomePage },
   { path: 'login', component: LoginPage },
@@ -14,6 +16,6 @@ export const routes: Routes = [
   { path: 'lista-detalhe/:id', component: ListaDetalhePage },
   { path: 'nova-lista', component: NovaListaPage },
   { path: 'scanner', loadComponent: () => import('./pages/scanner/scanner.page').then(m => m.ScannerPage) },
-  { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: '**', redirectTo: 'home' }
+  { path: '', pathMatch: 'full', redirectTo: 'onboarding' },
+  { path: '**', redirectTo: 'onboarding' }
 ];

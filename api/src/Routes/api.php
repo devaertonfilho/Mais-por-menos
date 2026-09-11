@@ -25,7 +25,8 @@ return static function (App $app): void {
     $app->get('/listas/usuario/{id}', [ListaController::class, 'buscarListas']);
 
     $app->group('', function ($app) {
-        $app->post('/listas', [ListaController::class, 'store']);
+        $app->get('/listas', [ListaController::class, 'buscarListas']);
+    $app->post('/listas', [ListaController::class, 'store']);
         $app->post('/listas/{id}/itens', [ListaController::class, 'addItem']);
         $app->post('/listas/{id}/duplicar', [ListaController::class, 'duplicar']);
         $app->post('/comunidade/compartilhar', [\App\Controllers\ComunidadeController::class, 'compartilharPrecos']);
