@@ -1,0 +1,40 @@
+<div class="carousel-container">
+  <div
+    class="carousel-card"
+    [style.background]="active.gradient"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp()"
+    (pointerleave)="onPointerUp()"
+  >
+    <!-- Progress segments -->
+    <div class="progress-container">
+      <div *ngFor="let s of slides; let i = index" class="progress-segment">
+        <div
+          class="progress-bar"
+          [class.full]="i < index"
+          [class.active]="i === index"
+          [style.animation-duration]="SLIDE_DURATION + 'ms'"
+          [style.animation-play-state]="paused ? 'paused' : 'running'"
+          [key]="i === index ? progressKey : undefined"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Illustration -->
+    <div class="illustration-area" [style.transform]="'translateX(' + (dragX * 0.4) + 'px)'">
+      <div class="main-badge" [style.background]="active.badgeGradient">
+        <ion-icon [name]="active.icon" class="main-icon"></ion-icon>
+      </div>
+      <div class="float-badge">
+        <ion-icon [name]="active.floatIcon" class="float-icon" [style.color]="active.accentColor"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Text -->
+    <div class="text-content">
+      <h2>{{ active.title }}</h2>
+      <p>{{ active.subtitle }}</p>
+    </div>
+  </div>
+</div>

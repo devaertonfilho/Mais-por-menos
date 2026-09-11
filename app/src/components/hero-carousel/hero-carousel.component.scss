@@ -1,0 +1,125 @@
+.carousel-container {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  font-family: 'Baloo 2', ui-rounded, 'Segoe UI Rounded', system-ui, sans-serif;
+}
+
+.carousel-card {
+  position: relative;
+  border-radius: 32px;
+  overflow: hidden;
+  min-height: 480px;
+  padding: 20px 20px 28px;
+  box-shadow: 0 24px 60px -20px rgba(0,0,0,0.45);
+  touch-action: pan-y;
+  cursor: grab;
+  transition: background 700ms ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-container {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 28px;
+}
+
+.progress-segment {
+  flex: 1;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 4px;
+  animation: fillbar linear forwards;
+}
+
+.progress-bar.full {
+  width: 100%;
+}
+
+.progress-bar.active {
+  width: 0%; // Reset for animation
+}
+
+@keyframes fillbar {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.illustration-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  position: relative;
+  transition: transform 400ms ease;
+}
+
+.main-badge {
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 6px 14px rgba(255, 255, 255, 0.5),
+    inset 0 -10px 24px rgba(0, 0, 0, 0.25),
+    0 20px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+.main-icon {
+  font-size: 72px;
+  color: #FFFFFF;
+}
+
+.float-badge {
+  position: absolute;
+  top: 10px;
+  right: 60px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px -6px rgba(0, 0, 0, 0.4);
+}
+
+.float-icon {
+  font-size: 26px;
+}
+
+.text-content {
+  text-align: center;
+  margin-top: 20px;
+  color: #FFFFFF;
+}
+
+.text-content h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  letter-spacing: -0.3px;
+  color: inherit;
+}
+
+.text-content p {
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Inter', system-ui, sans-serif;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
