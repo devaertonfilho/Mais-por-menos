@@ -1,0 +1,71 @@
+<ion-content class="page-container">
+  <div class="auth-card">
+    <div class="logo-container">
+      <div class="logo-box">
+        <ion-icon name="sparkles"></ion-icon>
+      </div>
+    </div>
+
+    <div class="header-section">
+      <h1 class="header-title">Criar uma conta</h1>
+      <p class="header-subtitle">Leva menos de 1 minuto para começar.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="cadastrar()">
+      <ion-item lines="none" class="input-item">
+        <ion-input
+          label="Email"
+          labelPlacement="stacked"
+          type="email"
+          formControlName="email"
+          placeholder="seu@email.com"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none" class="input-item">
+        <ion-input
+          label="Senha"
+          labelPlacement="stacked"
+          type="password"
+          formControlName="senha"
+          placeholder="Crie uma senha"
+        ></ion-input>
+      </ion-item>
+
+      <ion-button expand="block" type="submit" class="main-btn" [disabled]="carregando">
+        @if (carregando) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          Criar Conta
+        }
+      </ion-button>
+    </form>
+
+    <div class="divider">ou</div>
+
+    <div class="social-buttons">
+      <ion-button expand="block" class="social-btn" (click)="socialLogin('google')">
+        <ion-icon slot="start" name="logo-google"></ion-icon>
+        Continuar com Google
+      </ion-button>
+      <ion-button expand="block" class="social-btn" (click)="socialLogin('facebook')">
+        <ion-icon slot="start" name="logo-facebook"></ion-icon>
+        Continuar com Facebook
+      </ion-button>
+      <ion-button expand="block" class="social-btn" (click)="socialLogin('apple')">
+        <ion-icon slot="start" name="logo-apple"></ion-icon>
+        Continuar com Apple
+      </ion-button>
+    </div>
+
+    <div class="footer-link">
+      Já tem uma conta? <a (click)="router.navigate(['/login'])">Fazer Login</a>
+    </div>
+
+    @if (mensagem) {
+      <div class="success-message" style="text-align: center; margin-top: 20px; color: #2D6A4F; font-weight: 600;">
+        {{ mensagem }}
+      </div>
+    }
+  </div>
+</ion-content>

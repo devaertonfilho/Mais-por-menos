@@ -1,6 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError, throwError as throwErrorRx } from 'rxjs';
+import { catchError as catchErrorRx } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 export interface ApiResponse<T> {
   status: 'sucesso' | 'erro';
@@ -29,13 +32,26 @@ export class ApiService {
 
   constructor(private readonly http: HttpClient) {}
 
-  criarLista(usuarioId: number, nome: string): Observable<ApiResponse<Lista>> {
-    return this.http.post<ApiResponse<Lista>>(`${this.baseUrl}/listas`, {
-      usuario_id: usuarioId,
-      nome
-    });
+  // --- AUTENTICAÇÃO ---
+  login(email: string, senha: string): Observable<ApiResponse<{ token: string, usuario: any }>> {
+    return this.http.post<ApiResponse<{ token: string, usuario: any }>>(`${this.baseUrl}/login`, { email, senha });
   }
 
+  // --- LISTAS ---
+  criarLista(nome: string): Observable<ApiResponse<Lista>> {
+    // usuario_id agora é injetado pelo token via AuthInterceptor
+    return this.http.post<ApiResponse<Lista>>(`${this.baseUrl}/listas`, { nome });
+  }
+
+  listarMinhasListas(): Observable<ApiResponse<Lista[]>> {
+    return this.http.get<ApiResponse<Lista[]>>(`${this.baseUrl}/listas`);
+  }
+
+  buscarListas(usuarioId: number): Observable<ApiResponse<Lista[]>> {
+    return this.http.get<ApiResponse<Lista[]>>(`${this.baseUrl}/listas/usuario/${usuarioId}`);
+  }
+
+  // --- PRODUTOS ---
   buscarProduto(codigoBarras: string): Observable<ApiResponse<Produto>> {
     return this.http.get<ApiResponse<Produto>>(`${this.baseUrl}/produtos/${encodeURIComponent(codigoBarras)}`);
   }
@@ -47,8 +63,10 @@ export class ApiService {
     });
   }
 
-  buscarListas(usuarioId: number): Observable<ApiResponse<Lista[]>> {
-    return this.http.get<ApiResponse<Lista[]>>(`${this.baseUrl}/listas/usuario/${usuarioId}`);
+  // --- IA ---
+  obterSugestao(listaId: number): Observable<ApiResponse<{ sugestao: string }>> {
+    return this.http.post<ApiResponse<{ sugestao: string }>>(`${this.baseUrl}/ia/sugestao-lista`, {
+      lista_id: listaId
+    });
   }
-
 }

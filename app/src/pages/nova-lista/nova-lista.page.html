@@ -1,40 +1,87 @@
-<ion-header>
-  <ion-toolbar><ion-title>Nova lista</ion-title></ion-toolbar>
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Nova lista</ion-title>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <form [formGroup]="listaForm" (ngSubmit)="criarLista()">
-    <ion-item>
-      <ion-input label="ID do usuário" labelPlacement="stacked" type="number" formControlName="usuarioId"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-input label="Nome da lista" labelPlacement="stacked" formControlName="nome"></ion-input>
-    </ion-item>
-    <ion-button type="submit" [disabled]="carregando">Criar lista</ion-button>
-  </form>
+<ion-content class="ion-padding page-container">
+  <div class="header-section">
+    <h1 class="header-title">Criar nova lista</h1>
+    <p class="header-subtitle">Organize seus produtos para economizar mais.</p>
+  </div>
 
-  @if (lista) {
-    <h2>{{ lista.nome }}</h2>
-    <ion-item>
-      <ion-input label="Código de barras" labelPlacement="stacked" [formControl]="codigoBarrasControl" (keyup.enter)="lerCodigoBarras()"></ion-input>
-      <ion-button slot="end" (click)="abrirScanner()">
-        <ion-icon name="camera"></ion-icon>
+  <div class="form-card">
+    <form [formGroup]="listaForm" (ngSubmit)="criarLista()">
+      <ion-item lines="none" class="input-item">
+        <ion-input
+          label="Nome da lista"
+          labelPlacement="stacked"
+          formControlName="nome"
+          placeholder="Ex: Compras do Mês"
+        ></ion-input>
+      </ion-item>
+
+      @if (listaForm.get('nome')?.touched && listaForm.get('nome')?.invalid) {
+        <div class="error-message">O nome da lista é obrigatório.</div>
+      }
+
+      <ion-button expand="block" type="submit" class="main-btn" [disabled]="carregando">
+        @if (carregando) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          Criar lista
+        }
       </ion-button>
-    </ion-item>
-    <ion-button (click)="lerCodigoBarras()" [disabled]="carregando">Buscar e adicionar produto</ion-button>
+    </form>
+  </div>
+
+  @if (mensagem) {
+    <div class="success-message">
+      {{ mensagem }}
+    </div>
   }
 
-  @if (carregando) { <ion-spinner></ion-spinner> }
-  @if (mensagem) { <ion-note>{{ mensagem }}</ion-note> }
+  @if (lista) {
+    <div class="product-section">
+      <h2 class="header-title" style="font-size: 1.2rem; margin-bottom: 16px;">{{ lista.nome }}</h2>
 
-  <ion-list>
-    @for (produto of itens; track produto.id) {
-      <ion-item>
-        <ion-label>
-          <h3>{{ produto.nome }}</h3>
-          <p>{{ produto.marca || 'Sem marca' }} · {{ produto.codigo_barras }}</p>
-        </ion-label>
-      </ion-item>
-    }
-  </ion-list>
+      <div class="form-card">
+        <ion-item lines="none" class="input-item">
+          <ion-input
+            label="Código de barras"
+            labelPlacement="stacked"
+            [formControl]="codigoBarrasControl"
+            (keyup.enter)="lerCodigoBarras()"
+            placeholder="Escanear produto..."
+          ></ion-input>
+        </ion-item>
+        <div style="display: flex; gap: 10px; margin-top: 16px;">
+          <ion-button expand="block" (click)="lerCodigoBarras()" class="main-btn" [disabled]="carregando">
+            @if (carregando) {
+              <ion-spinner name="crescent"></ion-spinner>
+            } @else {
+              Adicionar produto
+            }
+          </ion-button>
+          <ion-button (click)="abrirScanner()" fill="outline" class="scan-btn">
+            <ion-icon name="camera"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+      <ion-list class="product-list">
+        @for (produto of itens; track produto.id) {
+          <ion-item class="product-item">
+            <ion-label>
+              <h3 style="font-weight: 600;">{{ produto.nome }}</h3>
+              <p>{{ produto.marca || 'Sem marca' }} · {{ produto.codigo_barras }}</p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    </div>
+  }
 </ion-content>
