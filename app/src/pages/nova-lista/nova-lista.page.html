@@ -17,6 +17,9 @@
     <h2>{{ lista.nome }}</h2>
     <ion-item>
       <ion-input label="Código de barras" labelPlacement="stacked" [formControl]="codigoBarrasControl" (keyup.enter)="lerCodigoBarras()"></ion-input>
+      <ion-button slot="end" (click)="abrirScanner()">
+        <ion-icon name="camera"></ion-icon>
+      </ion-button>
     </ion-item>
     <ion-button (click)="lerCodigoBarras()" [disabled]="carregando">Buscar e adicionar produto</ion-button>
   }

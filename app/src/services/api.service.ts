@@ -25,7 +25,7 @@ export interface Lista {
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:8080';
+  private readonly baseUrl = 'http://192.168.1.112:8080';
 
   constructor(private readonly http: HttpClient) {}
 
@@ -46,4 +46,9 @@ export class ApiService {
       quantidade
     });
   }
+
+  buscarListas(usuarioId: number): Observable<ApiResponse<Lista[]>> {
+    return this.http.get<ApiResponse<Lista[]>>(`${this.baseUrl}/listas/usuario/${usuarioId}`);
+  }
+
 }

@@ -22,6 +22,8 @@ return static function (App $app): void {
     $app->post('/usuarios', [UsuarioController::class, 'store']);
     $app->post('/login', [UsuarioController::class, 'login']);
 
+    $app->get('/listas/usuario/{id}', [ListaController::class, 'buscarListas']);
+
     $app->group('', function ($app) {
         $app->post('/listas', [ListaController::class, 'store']);
         $app->post('/listas/{id}/itens', [ListaController::class, 'addItem']);

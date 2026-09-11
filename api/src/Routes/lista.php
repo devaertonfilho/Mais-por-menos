@@ -7,6 +7,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
 
-return static function (App $app): void {
+return static function ($app): void {
     $app->get('/listas/{id}/resumo', [ListaController::class, 'resumo']);
 };

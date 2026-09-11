@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Minhas Listas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="carregando" class="ion-text-center ion-padding">
+    <ion-spinner></ion-spinner>
+    <p>Carregando listas...</p>
+  </div>
+
+  <div *ngIf="!carregando && mensagem" class="ion-text-center ion-padding">
+    <p>{{ mensagem }}</p>
+    <ion-button (click)="carregarListas()" fill="outline">Tentar Novamente</ion-button>
+  </div>
+
+  <ion-list *ngIf="!carregando && listas.length > 0">
+    <ion-item *ngFor="let lista of listas" button (click)="navCtrl.navigateForward('/lista-detalhe/' + lista.id)">
+      <ion-label>
+        <h2>{{ lista.nome }}</h2>
+        <p>ID: {{ lista.id }}</p>
+      </ion-label>
+      <ion-icon slot="end" name="chevron-forward"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <div class="ion-text-center ion-padding" style="margin-top: 20px;">
+    <ion-button (click)="criarNovaLista()" expand="block">
+      <ion-icon slot="start" name="add"></ion-icon>
+      Criar Nova Lista
+    </ion-button>
+  </div>
+</ion-content>

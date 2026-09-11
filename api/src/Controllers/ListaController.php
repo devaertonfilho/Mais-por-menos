@@ -15,6 +15,32 @@ final class ListaController extends ApiController
     {
     }
 
+    /** @param array<string, string> $args */
+    public function buscarListas(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $args
+    ): ResponseInterface {
+        $usuarioId = filter_var($args['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+        if ($usuarioId === false) {
+            return $this->error($response, 'ID do usuário inválido.', 400);
+        }
+
+        try {
+            $stmt = $this->pdo->prepare('SELECT id, usuario_id, nome FROM listas WHERE usuario_id = :usuario_id');
+            $stmt->execute(['usuario_id' => $usuarioId]);
+            $listas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $this->json($response, [
+                'status' => 'sucesso',
+                'dados' => $listas
+            ]);
+        } catch (PDOException) {
+            return $this->error($response, 'Erro ao buscar listas do usuário.', 500);
+        }
+    }
+
     public function store(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $body = $this->body($request);
@@ -96,7 +122,6 @@ final class ListaController extends ApiController
             return $this->error($response, 'Não foi possível adicionar o produto à lista.', 500);
         }
     }
-}
 
     /** @param array<string, string> $args */
     public function resumo(
@@ -123,7 +148,6 @@ final class ListaController extends ApiController
             $orcamento = (float) ($lista['orcamento'] ?? 0.0);
 
             // 2. Soma preços dos itens marcados como comprados
-            // Assume-se a tabela precos com o preco mais recente por produto
             $sql = "
                 SELECT SUM(il.quantidade * p.preco) as total_gasto
                 FROM itens_lista il
