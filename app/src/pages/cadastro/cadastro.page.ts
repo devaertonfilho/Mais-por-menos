@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   IonButton, IonContent, IonInput, IonItem,
@@ -14,7 +14,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, IonButton, IonContent, IonInput,
-    IonItem, IonSpinner, IonIcon
+    IonItem, IonSpinner, IonIcon, RouterLink
   ],
   templateUrl: './cadastro.page.html',
   styleUrls: ['./cadastro.page.scss']
