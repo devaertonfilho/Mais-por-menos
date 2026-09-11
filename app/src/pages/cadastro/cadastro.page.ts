@@ -32,7 +32,9 @@ export class CadastroPage {
     private readonly formBuilder: FormBuilder,
     private readonly authService: AuthService,
     public readonly router: Router
-  ) {}
+  ) {
+    console.log('CadastroPage: Componente instanciado com sucesso!');
+  }
 
   async cadastrar(): Promise<void> {
     if (this.form.invalid) {

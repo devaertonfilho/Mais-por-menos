@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavController, ToastController, IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon } from '@ionic/angular';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
-import { ApiService, Produto, ApiResponse } from '../../../services/api.service';
+import { ApiService, Produto, ApiResponse } from '../../services/api.service';
 
 @Component({
   selector: 'app-scanner',
