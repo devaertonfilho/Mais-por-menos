@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Slim\App;
+use Slim\Routing\RouteCollectorProxy;
 
-return static function (App $app): void {
+return static function (RouteCollectorProxy $app): void {
     // Rotas de preços serão registradas aqui.
 };

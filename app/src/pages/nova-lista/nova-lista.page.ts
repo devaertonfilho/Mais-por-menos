@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel,
-  IonList, IonNote, IonSpinner, IonTitle, IonToolbar, IonButtons, IonBackButton
+  IonList, IonSpinner, IonTitle, IonToolbar, IonButtons, IonBackButton
 } from '@ionic/angular';
 import { concatMap, finalize, map } from 'rxjs';
 import { ApiResponse, ApiService, Lista, Produto } from '../../services/api.service';
@@ -15,7 +15,7 @@ import { ApiResponse, ApiService, Lista, Produto } from '../../services/api.serv
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, IonButton, IonContent, IonHeader, IonInput,
-    IonItem, IonLabel, IonList, IonNote, IonSpinner, IonTitle, IonToolbar, IonButtons, IonBackButton
+    IonItem, IonLabel, IonList, IonSpinner, IonTitle, IonToolbar, IonButtons, IonBackButton
   ],
   templateUrl: './nova-lista.page.html',
   styleUrls: ['./nova-lista.page.scss']

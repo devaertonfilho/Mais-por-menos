@@ -20,6 +20,7 @@ final class ContainerFactory
             \App\Jobs\SincronizarPrecosSefaz::class => \DI\autowire(),
             \App\Controllers\IAController::class => \DI\autowire(),
             \App\Controllers\ListaController::class => \DI\autowire(),
+            \App\Controllers\UsuarioController::class => \DI\autowire(),
         ]);
 
         return $builder->build();

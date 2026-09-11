@@ -22,7 +22,13 @@ $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 $app->add(new CorsMiddleware($app->getResponseFactory()));
 
-$errorMiddleware = $app->addErrorMiddleware(false, false, false);
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorMiddleware->setDefaultErrorHandler(new JsonErrorHandler($app->getResponseFactory()));
 
-$app->run();
+try {
+    $app->run();
+} catch (\Throwable $e) {
+    echo "FATAL ERROR: " . $e->getMessage() . "\n";
+    echo "File: " . $e->getFile() . " Line: " . $e->getLine() . "\n";
+    echo "Stack Trace:\n" . $e->getTraceAsString() . "\n";
+}

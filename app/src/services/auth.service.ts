@@ -41,7 +41,7 @@ export class AuthService {
     return this.http.post<ApiResponse<{ token: string, usuario: any }>>(`${this.baseUrl}/login`, { email, senha });
   }
 
-  isAuthenticated(): Promise<boolean> {
+  async isAuthenticated(): Promise<boolean> {
     return !!(await this.getToken());
   }
 }

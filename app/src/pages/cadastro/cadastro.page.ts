@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
-  IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel,
-  IonTitle, IonToolbar, IonButtons, IonBackButton, IonNote
+  IonButton, IonContent, IonInput, IonItem,
+  IonSpinner, IonIcon
 } from '@ionic/angular';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -13,15 +13,14 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-cadastro',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, IonButton, IonContent, IonHeader, IonInput,
-    IonItem, IonLabel, IonTitle, IonToolbar, IonButtons, IonBackButton, IonNote
+    CommonModule, ReactiveFormsModule, IonButton, IonContent, IonInput,
+    IonItem, IonSpinner, IonIcon
   ],
   templateUrl: './cadastro.page.html',
   styleUrls: ['./cadastro.page.scss']
 })
 export class CadastroPage {
   readonly form = this.formBuilder.nonNullable.group({
-    nome: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     senha: ['', [Validators.required, Validators.minLength(6)]]
   });
@@ -35,17 +34,18 @@ export class CadastroPage {
     public readonly router: Router
   ) {}
 
-  async cadastrar(): void {
+  async cadastrar(): Promise<void> {
     if (this.form.invalid) {
       this.mensagem = 'Por favor, preencha todos os campos corretamente.';
       return;
     }
 
-    const { nome, email, senha } = this.form.getRawValue();
+    const { email, senha } = this.form.getRawValue();
     this.carregando = true;
     this.mensagem = '';
 
-    this.authService.register(nome, email, senha).pipe(
+    // Como o backend pede 'nome', simulamos como 'Novo Usuário'.
+    this.authService.register('Novo Usuário', email, senha).pipe(
       finalize(() => this.carregando = false)
     ).subscribe({
       next: (response) => {
@@ -56,5 +56,9 @@ export class CadastroPage {
         this.mensagem = 'Erro ao cadastrar. Verifique se o email já existe.';
       }
     });
+  }
+
+  socialLogin(provider: string): void {
+    console.log(`Social login via ${provider} clicado (Placeholder)`);
   }
 }

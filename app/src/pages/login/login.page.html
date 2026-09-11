@@ -1,19 +1,16 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="page-container">
+  <div class="auth-card">
+    <div class="logo-container">
+      <div class="logo-box">
+        <ion-icon name="sparkles"></ion-icon>
+      </div>
+    </div>
 
-<ion-content class="ion-padding page-container">
-  <div class="header-section">
-    <h1 class="header-title">Bem-vindo de volta</h1>
-    <p class="header-subtitle">Faça login para continuar economizando.</p>
-  </div>
+    <div class="header-section">
+      <h1 class="header-title">Bem-vindo de volta,</h1>
+      <p class="header-subtitle">Insira seu e-mail e senha para continuar.</p>
+    </div>
 
-  <div class="form-card">
     <form [formGroup]="form" (ngSubmit)="login()">
       <ion-item lines="none" class="input-item">
         <ion-input
@@ -43,13 +40,21 @@
         }
       </ion-button>
     </form>
-  </div>
 
-  @if (mensagem) {
-    <div class="success-message">{{ mensagem }}</div>
-  }
+    <div class="forgot-password">
+      <a (click)="forgotPassword()">Esqueceu a senha?</a>
+    </div>
 
-  <div class="footer-link">
-    <p>Não tem uma conta? <a (click)="router.navigate(['/cadastro'])">Criar conta</a></p>
+    <div class="divider">ou</div>
+
+    <ion-button expand="block" class="secondary-btn" (click)="router.navigate(['/cadastro'])">
+      Criar uma Conta
+    </ion-button>
+
+    @if (mensagem) {
+      <div class="success-message">
+        {{ mensagem }}
+      </div>
+    }
   </div>
 </ion-content>

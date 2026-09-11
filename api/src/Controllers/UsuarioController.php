@@ -11,29 +11,30 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class UsuarioController extends ApiController
 {
-    public function __construct(private readonly PDO $pdo)
+    private PDO $pdo;
+
+    public function __construct(PDO $pdo)
     {
+        $this->pdo = $pdo;
     }
 
     public function store(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $body = $this->body($request);
-        $nome = $this->requiredString($body, 'nome');
-        $email = $this->requiredString($body, 'email');
-        $senha = $this->requiredString($body, 'senha');
-
-        if ($nome === null || $email === null || $senha === null) {
-            return $this->error($response, 'Nome, email e senha são obrigatórios.');
-        }
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->error($response, 'O email informado é inválido.');
-        }
-
         try {
+            $body = $this->body($request);
+
+            $nome = $this->requiredString($body, 'nome');
+            $email = $this->requiredString($body, 'email');
+            $senha = $this->requiredString($body, 'senha');
+
+            if (!$nome || !$email || !$senha) {
+                return $this->error($response, 'Nome, email e senha são obrigatórios.', 400);
+            }
+
             $statement = $this->pdo->prepare(
                 'INSERT INTO usuarios (nome, email, senha_hash) VALUES (:nome, :email, :senha_hash)'
             );
+
             $statement->execute([
                 'nome' => $nome,
                 'email' => $email,
@@ -43,29 +44,34 @@ final class UsuarioController extends ApiController
             return $this->json($response, [
                 'status' => 'sucesso',
                 'mensagem' => 'Usuário cadastrado com sucesso.',
-                'dados' => ['id' => (int) $this->pdo->lastInsertId(), 'nome' => $nome, 'email' => $email],
+                'dados' => [
+                    'id' => (int) $this->pdo->lastInsertId(),
+                    'nome' => $nome,
+                    'email' => $email
+                ],
             ], 201);
-        } catch (PDOException $exception) {
-            if ($exception->getCode() === '23000') {
-                return $this->error($response, 'Já existe um usuário com este email.', 409);
-            }
 
-            return $this->error($response, 'Não foi possível cadastrar o usuário.', 500);
+        } catch (PDOException $e) {
+            if ($e->getCode() == '23000') {
+                return $this->error($response, 'Este e-mail já está cadastrado.', 409);
+            }
+            return $this->error($response, 'Erro no banco: ' . $e->getMessage(), 500);
+        } catch (\Throwable $e) {
+            return $this->error($response, 'Erro interno: ' . $e->getMessage(), 500);
         }
     }
-}
 
     public function login(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $body = $this->body($request);
-        $email = $this->requiredString($body, 'email');
-        $senha = $this->requiredString($body, 'senha');
-
-        if ($email === null || $senha === null) {
-            return $this->error($response, 'Email e senha são obrigatórios.', 400);
-        }
-
         try {
+            $body = $this->body($request);
+            $email = $this->requiredString($body, 'email');
+            $senha = $this->requiredString($body, 'senha');
+
+            if (!$email || !$senha) {
+                return $this->error($response, 'Email e senha são obrigatórios.', 400);
+            }
+
             $stmt = $this->pdo->prepare('SELECT id, email, senha_hash FROM usuarios WHERE email = :email');
             $stmt->execute(['email' => $email]);
             $user = $stmt->fetch();
@@ -74,18 +80,14 @@ final class UsuarioController extends ApiController
                 return $this->error($response, 'Email ou senha incorretos.', 401);
             }
 
-            $secret = $_ENV['JWT_SECRET'] ?? '';
-            if ($secret === '') {
-                return $this->error($response, 'Erro interno: JWT_SECRET não configurado.', 500);
-            }
-
+            $secret = $_ENV['JWT_SECRET'] ?? 'default_secret';
             $payload = [
                 'iss' => 'mais-por-menos-api',
-                'sub' => (string) $user['id'],
-                'id'  => (int) $user['id'],
+                'sub' => (string)$user['id'],
+                'id' => (int)$user['id'],
                 'email' => $user['email'],
                 'iat' => time(),
-                'exp' => time() + (60 * 60 * 24), // 24 horas
+                'exp' => time() + (60 * 60 * 24),
             ];
 
             $jwt = \Firebase\JWT\JWT::encode($payload, $secret, 'HS256');
@@ -96,13 +98,13 @@ final class UsuarioController extends ApiController
                 'dados' => [
                     'token' => $jwt,
                     'usuario' => [
-                        'id' => (int) $user['id'],
+                        'id' => (int)$user['id'],
                         'email' => $user['email'],
                     ]
                 ],
             ]);
-        } catch (\Exception $exception) {
-            return $this->error($response, 'Erro ao processar login: ' . $exception->getMessage(), 500);
+        } catch (\Throwable $e) {
+            return $this->error($response, 'Erro no login: ' . $e->getMessage(), 500);
         }
     }
 }

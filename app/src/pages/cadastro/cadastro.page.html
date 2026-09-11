@@ -1,32 +1,20 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Criar Conta</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="page-container">
+  <div class="auth-card">
+    <div class="logo-container">
+      <div class="logo-box">
+        <ion-icon name="sparkles"></ion-icon>
+      </div>
+    </div>
 
-<ion-content class="ion-padding page-container">
-  <div class="header-section">
-    <h1 class="header-title">Junte-se a nós</h1>
-    <p class="header-subtitle">Crie sua conta para começar a economizar.</p>
-  </div>
+    <div class="header-section">
+      <h1 class="header-title">Criar uma conta</h1>
+      <p class="header-subtitle">Leva menos de 1 minuto para começar.</p>
+    </div>
 
-  <div class="form-card">
     <form [formGroup]="form" (ngSubmit)="cadastrar()">
       <ion-item lines="none" class="input-item">
         <ion-input
-          label="Nome Completo"
-          labelPlacement="stacked"
-          formControlName="nome"
-          placeholder="Digite seu nome"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item lines="none" class="input-item">
-        <ion-input
-          label="E-mail"
+          label="Email"
           labelPlacement="stacked"
           type="email"
           formControlName="email"
@@ -40,7 +28,7 @@
           labelPlacement="stacked"
           type="password"
           formControlName="senha"
-          placeholder="Mínimo 6 caracteres"
+          placeholder="Crie uma senha"
         ></ion-input>
       </ion-item>
 
@@ -52,13 +40,32 @@
         }
       </ion-button>
     </form>
-  </div>
 
-  @if (mensagem) {
-    <div class="success-message">{{ mensagem }}</div>
-  }
+    <div class="divider">ou</div>
 
-  <div class="footer-link">
-    <p>Já tem uma conta? <a (click)="router.navigate(['/login'])">Fazer login</a></p>
+    <div class="social-buttons">
+      <ion-button expand="block" class="social-btn" (click)="socialLogin('google')">
+        <ion-icon slot="start" name="logo-google"></ion-icon>
+        Continuar com Google
+      </ion-button>
+      <ion-button expand="block" class="social-btn" (click)="socialLogin('facebook')">
+        <ion-icon slot="start" name="logo-facebook"></ion-icon>
+        Continuar com Facebook
+      </ion-button>
+      <ion-button expand="block" class="social-btn" (click)="socialLogin('apple')">
+        <ion-icon slot="start" name="logo-apple"></ion-icon>
+        Continuar com Apple
+      </ion-button>
+    </div>
+
+    <div class="footer-link">
+      Já tem uma conta? <a (click)="router.navigate(['/login'])">Fazer Login</a>
+    </div>
+
+    @if (mensagem) {
+      <div class="success-message" style="text-align: center; margin-top: 20px; color: #2D6A4F; font-weight: 600;">
+        {{ mensagem }}
+      </div>
+    }
   </div>
 </ion-content>
