@@ -15,7 +15,7 @@ export class HomePage {
   constructor(private router: Router) {}
 
   start(): void {
-    console.log('Botão "Começar Agora" clicado. Navegando para nova-lista...');
-    this.router.navigate(['/nova-lista']);
+    console.log('Botão "Começar Agora" clicado. Navegando para cadastro...');
+    this.router.navigate(['/cadastro']);
   }
 }
