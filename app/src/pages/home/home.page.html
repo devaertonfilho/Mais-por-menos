@@ -1,13 +1,61 @@
-<ion-content [fullscreen]="true" class="ion-padding">
-  <div class="home-container">
-    <div class="welcome-section">
-      <h1>Bem-vindo ao Mais por Menos</h1>
-      <p>Economize de verdade em cada compra no seu bairro.</p>
-      <ion-button expand="block" shape="round" class="main-btn" routerLink="/cadastro">
-        Começar agora
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/onboarding"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Minhas Listas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (carregando) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Carregando suas listas...</p>
+    </div>
+  } @else if (listas.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="cart-outline"></ion-icon>
+      <h2>Nenhuma lista encontrada</h2>
+      <p>Você ainda não tem nenhuma lista de compras. Comece agora a organizar seus gastos!</p>
+      <ion-button expand="block" shape="round" routerLink="/nova-lista" class="main-btn">
+        Criar minha primeira lista
       </ion-button>
     </div>
+  } @else {
+    <div class="lists-container">
+      <div class="header-row">
+        <h2>Suas Listas</h2>
+        <ion-button fill="clear" routerLink="/nova-lista">
+          <ion-icon slot="start" name="add-circle"></ion-icon>
+          Nova Lista
+        </ion-button>
+      </div>
 
-    <app-hero-carousel></app-hero-carousel>
-  </div>
+      <ion-list lines="inset">
+        @for (lista of listas; track lista.id) {
+          <ion-item button (click)="abrirLista(lista.id)" class="lista-item">
+            <ion-icon slot="start" name="document-text-outline" color="primary"></ion-icon>
+            <ion-label>
+              <h2>{{ lista.nome }}</h2>
+              <p>Clique para gerenciar os itens</p>
+            </ion-label>
+            <ion-icon slot="end" name="chevron-forward"></ion-icon>
+          </ion-item>
+        }
+      </ion-list>
+    </div>
+  }
+
+  @if (mensagem) {
+    <div class="error-message">
+      {{ mensagem }}
+    </div>
+  }
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/nova-lista" color="primary">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
