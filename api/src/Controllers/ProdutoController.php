@@ -11,8 +11,10 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class ProdutoController extends ApiController
 {
-    public function __construct(private readonly PDO $pdo)
-    {
+    public function __construct(
+        private readonly PDO $pdo,
+        private readonly \App\Services\PrecoService $precoService
+    ) {
     }
 
     /** @param array<string, string> $args */

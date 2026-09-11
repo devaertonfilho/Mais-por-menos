@@ -106,7 +106,7 @@ final class ListaController extends ApiController
     ): ResponseInterface {
         $listaId = filter_var($args['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
-        if ($listaId === false) {
+        if ($//S lC l $listaId === false) {
             return $this->error($response, 'ID da lista inválido.', 400);
         }
 
@@ -153,6 +153,81 @@ final class ListaController extends ApiController
             ]);
         } catch (PDOException) {
             return $this->error($response, 'Erro ao calcular resumo da lista.', 500);
+        }
+    }
+
+    /** @param array<string, string> $args */
+    public function duplicar(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $args
+    ): ResponseInterface {
+        $listaIdOriginal = filter_var($args['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $usuarioId = $request->getAttribute('usuario_id');
+        $body = $this->body($request);
+        $novoNome = $this->requiredString($body, 'nome');
+
+        if ($listaIdOriginal === false || $usuarioId === null) {
+            return $this->error($//S lC l 'ID da lista inválido ou usuário não autenticado.', 400);
+        }
+
+        try {
+            // 1. Verifica se a lista original existe e pertence ao usuário
+            $stmt = $this->pdo->prepare('SELECT nome FROM listas WHERE id = :id AND usuario_id = :uid');
+            $stmt->execute(['id' => $listaIdOriginal, 'uid' => $usuarioId]);
+            $listaOriginal = $stmt->fetch();
+
+            if (!$listaOriginal) {
+                return $this->error($response, 'Lista original não encontrada ou você não tem permissão.', 404);
+            }
+
+            // Define o nome da nova lista
+            $nomeFinal = $novoNome ?? $listaOriginal['nome'] . ' (cópia)';
+
+            $this->pdo->beginTransaction();
+
+            // 2. Cria a nova lista
+            $stmt = $this->pdo->prepare('INSERT INTO listas (usuario_id, nome) VALUES (:uid, :nome)');
+            $stmt->execute(['uid' => $usuarioId, 'nome' => $nomeFinal]);
+            $novaListaId = (int) $this->pdo->lastInsertId();
+
+            // 3. Copia os itens
+            $stmt = $this->pdo->prepare('SELECT produto_id, quantidade FROM itens_lista WHERE lista_id = :id');
+            $stmt->execute(['id' => $listaIdOriginal]);
+            $itens = $stmt->fetchAll();
+
+            $itensCopiados = 0;
+            if ($itens) {
+                $stmtInsert = $this->pdo->prepare(
+                    'INSERT INTO itens_lista (lista_id, produto_id, quantidade, comprado) VALUES (:lid, :pid, :qtd, 0)'
+                );
+                foreach ($itens as $item) {
+                    $stmtInsert->execute([
+                        'lid' => $novaListaId,
+                        'pid' => $item['produto_id'],
+                        'qtd' => $item['quantidade']
+                    ]);
+                    $itensCopiados++;
+                }
+            }
+
+            $this->pdo->commit();
+
+            return $this->json($response, [
+                'status' => 'sucesso',
+                'mensagem' => 'Lista duplicada com sucesso.',
+                'dados' => [
+                    'id' => $novaListaId,
+                    'nome' => $nomeFinal,
+                    'itens_copiados' => $itensCopiados
+                ]
+            ], 201);
+
+        } catch (Exception $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            return $this->error($response, 'Erro ao duplicar lista: ' . $e->getMessage(), 500);
         }
     }
 }
